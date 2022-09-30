@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Sekior"
 include ':app'
+include ':mylibrary'
