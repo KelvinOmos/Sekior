@@ -9,9 +9,11 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import com.example.sekior.models.RegistrationRequestModel;
 import com.example.sekior.models.ResponseModel;
 import com.example.sekior.utils.Logg;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -22,12 +24,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Future;
 
 
 public class LauncherActivity extends AppCompatActivity {
 
     Handler handler;
+    Logg logger;
 
     String phoneuId;
 
@@ -37,9 +41,15 @@ public class LauncherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_launcher);
         getSupportActionBar().hide();
 
-        phoneuId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        try {
+            phoneuId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        new MyTask().execute();
+            new MyTask().execute();
+        }catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+            logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
+            logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+        }
     }
 
     private HttpResponse callApi() throws JSONException, UnirestException {
@@ -62,7 +72,9 @@ public class LauncherActivity extends AppCompatActivity {
                 logger = new Logg();
                 response = callApi();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                LauncherActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
                 logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
                 logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
             }
@@ -74,9 +86,18 @@ public class LauncherActivity extends AppCompatActivity {
                 Gson gc = new Gson();
                 if (response != null) {
                     ResponseModel responseModel = gc.fromJson(response.getBody().toString(), ResponseModel.class);
+                    LinkedTreeMap map = (LinkedTreeMap) responseModel.getData();
+                    String usermobile = Objects.requireNonNull(map.get("usermobile")).toString();
+                    String useremail = Objects.requireNonNull(map.get("useremail")).toString();
                     if (responseModel.getSucceeded()) {
                         Intent intent = new Intent(LauncherActivity.this, LoginActivity.class);
                         intent.putExtra("phoneuId", phoneuId);
+                        if (!useremail.isEmpty()) {
+                            intent.putExtra("email", useremail);
+                        }
+                        if (!usermobile.isEmpty()) {
+                            intent.putExtra("phoneNumber", usermobile);
+                        }
                         startActivity(intent);
                         finish();
                     } else {
@@ -89,7 +110,9 @@ public class LauncherActivity extends AppCompatActivity {
                     Toast.makeText(LauncherActivity.this, "An error has occurred", Toast.LENGTH_SHORT).show();
                 }
             }catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                LauncherActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
                 logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
                 logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
             }

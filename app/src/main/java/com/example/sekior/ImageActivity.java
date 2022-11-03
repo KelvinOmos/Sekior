@@ -125,9 +125,9 @@ public class ImageActivity extends AppCompatActivity {
 
         try {
             addresses = geocoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(ImageActivity.this, "Please enable location", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ImageActivity.this, "Please enable location and try again", Toast.LENGTH_SHORT).show();
         }
 
         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
@@ -157,7 +157,9 @@ public class ImageActivity extends AppCompatActivity {
             try {
                 response = callApi();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                ImageActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
                 logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
                 logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
             }
@@ -166,15 +168,26 @@ public class ImageActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             Gson gc = new Gson();
-            ResponseModel responseModel = gc.fromJson(response.getBody().toString(), ResponseModel.class);
-            if (responseModel.getSucceeded()) {
-                Intent intent = new Intent(ImageActivity.this, SuccessActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
+            try {
+                ResponseModel responseModel = gc.fromJson(response.getBody().toString(), ResponseModel.class);
+                if (responseModel.getSucceeded()) {
+                    Intent intent = new Intent(ImageActivity.this, SuccessActivity.class);
+                    if (!email.isEmpty()) {
+                        intent.putExtra("email", email);
+                    }
+                    if (!phoneNumber.isEmpty()) {
+                        intent.putExtra("phoneNumber", phoneNumber);
+                    }
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception ex) {
+                ImageActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
+                });
             }
-
         }
     }
 

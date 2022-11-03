@@ -161,7 +161,9 @@ public class OtherActivity extends AppCompatActivity {
             try {
                 response = callApi();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                OtherActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
                 logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
                 logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
             }
@@ -170,15 +172,20 @@ public class OtherActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             Gson gc = new Gson();
-            ResponseModel responseModel = gc.fromJson(response.getBody().toString(), ResponseModel.class);
-            if (responseModel.getSucceeded()) {
-                Intent intent = new Intent(OtherActivity.this, SuccessActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
+            try {
+                ResponseModel responseModel = gc.fromJson(response.getBody().toString(), ResponseModel.class);
+                if (responseModel.getSucceeded()) {
+                    Intent intent = new Intent(OtherActivity.this, SuccessActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception e) {
+                OtherActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
             }
-
         }
     }
 

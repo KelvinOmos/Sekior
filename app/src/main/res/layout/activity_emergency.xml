@@ -295,7 +295,7 @@
                 android:id="@+id/buttonOthers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="I REPORT"
+                android:text="EYE REPORT"
                 android:textStyle="bold"
                 android:textSize="25dp"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -3,6 +3,8 @@ package com.example.sekior;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -59,13 +61,22 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 phoneNumber = number.getText().toString();
                 emailAddress = email.getText().toString();
-                if (phoneNumber.isEmpty() || emailAddress.isEmpty()) {
-                    Toast.makeText(RegistrationActivity.this, "Please fill in all details", Toast.LENGTH_SHORT).show();
+                if (phoneNumber.isEmpty() && emailAddress.isEmpty()) {
+                    showWarning(null);
                 } else {
                     new MyTask().execute();
                 }
             }
         });
+    }
+
+    private void showWarning(DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(RegistrationActivity.this)
+                .setMessage("Please fill in one or more details")
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
     }
 
     private HttpResponse callApi() throws JSONException, UnirestException {
@@ -93,7 +104,9 @@ public class RegistrationActivity extends AppCompatActivity {
                 logger = new Logg();
                 response = callApi();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                RegistrationActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
                 logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
                 logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
             }
@@ -115,7 +128,9 @@ public class RegistrationActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Registration error", Toast.LENGTH_LONG).show();
                 }
             }catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                RegistrationActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
                 logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
                 logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
             }

@@ -67,6 +67,8 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         phoneuId =  Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        email = getIntent().getStringExtra("email");
+        phoneNumber = getIntent().getStringExtra("phoneNumber");
 
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
@@ -83,14 +85,20 @@ public class LoginActivity extends AppCompatActivity {
         editTextNumber = findViewById(R.id.editTextNumber);
         emailEditText = findViewById(R.id.emailEditText);
 
+        if (email != null && !email.isEmpty()) {
+            emailEditText.setText(email);
+        }
+
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            editTextNumber.setText(phoneNumber);
+        }
+
         signInButton = findViewById(R.id.signInButton);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                phoneNumber = editTextNumber.getText().toString();
-                email = emailEditText.getText().toString();
-                if(phoneNumber.isEmpty() || email.isEmpty()) {
-                    Toast.makeText(LoginActivity.this, "Please fill in all details", Toast.LENGTH_SHORT).show();
+                if(phoneNumber.isEmpty() && email.isEmpty()) {
+                    showWarning(null);
                 } else {
                     new MyTask().execute();
                 }
@@ -107,6 +115,15 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void showWarning(DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(LoginActivity.this)
+                .setMessage("Please fill in one or more details")
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
     }
 
     private HttpResponse callApi() throws JSONException, UnirestException {
@@ -130,7 +147,9 @@ public class LoginActivity extends AppCompatActivity {
                 logger = new Logg();
                 response = callApi();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                LoginActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
                 logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
                 logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
             }
@@ -153,7 +172,9 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Sign in cancel", Toast.LENGTH_LONG).show();
                 }
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                LoginActivity.this.runOnUiThread(()-> {
+                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                });
                 logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
                 logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
             }

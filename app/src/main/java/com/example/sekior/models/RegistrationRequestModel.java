@@ -1,6 +1,7 @@
 package com.example.sekior.models;
 
 public class RegistrationRequestModel {
+    public String uid;
     public String useremail;
     public String username;
     public String usermobile;
@@ -9,6 +10,15 @@ public class RegistrationRequestModel {
     public String phoneuid;
     public String registrationcoordinate;
     public String registrationaddress;
+    public String registrationdate;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getUseremail() {
         return useremail;
@@ -72,5 +82,13 @@ public class RegistrationRequestModel {
 
     public void setRegistrationaddress(String registrationaddress) {
         this.registrationaddress = registrationaddress;
+    }
+
+    public String getRegistrationdate() {
+        return registrationdate;
+    }
+
+    public void setRegistrationdate(String registrationdate) {
+        this.registrationdate = registrationdate;
     }
 }
