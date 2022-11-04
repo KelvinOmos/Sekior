@@ -260,8 +260,7 @@ public class EmergencyActivity extends AppCompatActivity {
                 response = callApi();
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
-                logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
-                logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+
             }
             return null;
         }
@@ -280,8 +279,7 @@ public class EmergencyActivity extends AppCompatActivity {
                 }
             }catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
-                logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
-                logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+
             }
         }
     }

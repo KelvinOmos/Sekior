@@ -150,8 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                 LoginActivity.this.runOnUiThread(()-> {
                     Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
                 });
-                logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
-                logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+
             }
             return null;
         }
@@ -175,8 +174,7 @@ public class LoginActivity extends AppCompatActivity {
                 LoginActivity.this.runOnUiThread(()-> {
                     Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
                 });
-                logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
-                logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+
             }
         }
     }
