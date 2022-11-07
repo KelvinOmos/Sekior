@@ -26,10 +26,10 @@ public class SuccessActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Intent intent = new Intent(SuccessActivity.this, LoginActivity.class);
-                if (!email.isEmpty()) {
+                if (email != null && !email.isEmpty()) {
                     intent.putExtra("email", email);
                 }
-                if (!phoneNumber.isEmpty()) {
+                if (phoneNumber!= null && !phoneNumber.isEmpty()) {
                     intent.putExtra("phoneNumber", phoneNumber);
                 }
                 startActivity(intent);

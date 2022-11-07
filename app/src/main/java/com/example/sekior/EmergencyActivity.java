@@ -260,7 +260,7 @@ public class EmergencyActivity extends AppCompatActivity {
                 logger = new Logg();
                 response = callApi();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
 
             }
             return null;
@@ -273,13 +273,15 @@ public class EmergencyActivity extends AppCompatActivity {
                 System.out.println(responseModel);
                 if (responseModel.getSucceeded()) {
                     Intent intent = new Intent(EmergencyActivity.this, SuccessActivity.class);
+                    intent.putExtra("phoneNumber", phoneNumber);
+                    intent.putExtra("email", email);
                     startActivity(intent);
                     finish();
                 } else {
                     Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
                 }
             }catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
 
             }
         }
