@@ -6,8 +6,10 @@ import androidx.appcompat.widget.AppCompatButton;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -71,8 +73,22 @@ public class ImageActivity extends AppCompatActivity {
 
         logger = new Logg();
 
-        longitude = getIntent().getStringExtra("longitude");
-        latitude = getIntent().getStringExtra("latitude");
+        SharedPreferences sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+        longitude = sharedPreferences.getString("longitude", null);
+        latitude = sharedPreferences.getString("latitude", null);
+
+        if ((longitude.isEmpty() || longitude.equals("0.0")) || (latitude.isEmpty() || latitude.equals("0.0"))) {
+            locationTrack = new LocationTrack(ImageActivity.this);
+            if(locationTrack.canGetLocation()) {
+                longitude = String.valueOf(locationTrack.getLongitude());
+                latitude = String.valueOf(locationTrack.getLatitude());
+            } else {
+                locationTrack.showSettingsAlert();
+                finish();
+                System.exit(0);
+            }
+        }
+
         email = getIntent().getStringExtra("email");
         phoneNumber = getIntent().getStringExtra("phoneNumber");
         serviceTypeId = getIntent().getStringExtra("serviceTypeId");
@@ -85,8 +101,7 @@ public class ImageActivity extends AppCompatActivity {
                     startActivityForResult(getPickImageChooserIntent(), 200);
                 }catch (Exception e) {
                     Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
-                    logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
-                    logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+
                 }
             }
         });
@@ -107,8 +122,7 @@ public class ImageActivity extends AppCompatActivity {
                             }
                         } catch (Exception e) {
                             Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
-                            logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
-                            logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+
                         }
                     }
                 });
@@ -158,7 +172,7 @@ public class ImageActivity extends AppCompatActivity {
                 response = callApi();
             } catch (Exception e) {
                 ImageActivity.this.runOnUiThread(()-> {
-                    Toast.makeText(getApplicationContext(), "An error has occured, please try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Service not available", Toast.LENGTH_LONG).show();
                 });
 
             }

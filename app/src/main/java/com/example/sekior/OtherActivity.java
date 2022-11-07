@@ -103,8 +103,7 @@ public class OtherActivity extends AppCompatActivity {
                             }
                         } catch (Exception e) {
                             Toast.makeText(getApplicationContext(), "An error has occured", Toast.LENGTH_LONG).show();
-                            logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
-                            logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+
                         }
                     }
                 });

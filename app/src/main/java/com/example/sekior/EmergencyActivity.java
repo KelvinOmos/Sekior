@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -37,6 +39,8 @@ public class EmergencyActivity extends AppCompatActivity {
     LocationTrack locationTrack;
     Logg logger;
 
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,11 +49,9 @@ public class EmergencyActivity extends AppCompatActivity {
 
         logger = new Logg();
 
-        locationTrack = new LocationTrack(EmergencyActivity.this);
-        if (locationTrack.canGetLocation()) {
-            longitude = String.valueOf(locationTrack.getLongitude());
-            latitude = String.valueOf(locationTrack.getLatitude());
-        }
+        sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+        longitude = sharedPreferences.getString("longitude", null);
+        latitude = sharedPreferences.getString("latitude", null);
 
         email = getIntent().getStringExtra("email");
         phoneNumber = getIntent().getStringExtra("phoneNumber");
@@ -230,8 +232,7 @@ public class EmergencyActivity extends AppCompatActivity {
             addresses = geocoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
         } catch (IOException e) {
             Toast.makeText(EmergencyActivity.this, "Please enable location", Toast.LENGTH_SHORT).show();
-            logger.addRecordToLog("ERROR MESSAGE:::" + e.getMessage());
-            logger.addRecordToLog("STACK TRACE:::" + e.getStackTrace().toString());
+
         }
 
         String address = addresses.get(0).getAddressLine(0);
