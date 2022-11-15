@@ -48,7 +48,6 @@ public class LoginActivity extends AppCompatActivity {
 
     Button signInButton;
     EditText editTextNumber, emailEditText;
-    AppCompatTextView registerButton;
     String email, phoneNumber;
 
     private static final int RC_SIGN_IN = 1;
@@ -104,17 +103,6 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     new MyTask().execute();
                 }
-            }
-        });
-
-        registerButton = findViewById(R.id.registerTextView);
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
-                intent.putExtra("phoneuId", phoneuId);
-                startActivity(intent);
-                finish();
             }
         });
     }

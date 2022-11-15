@@ -73,7 +73,7 @@ public class LauncherActivity extends AppCompatActivity {
             phoneuId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
             new MyTask().execute();
         }catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "No response from the server", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "No response from server 1", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -98,7 +98,7 @@ public class LauncherActivity extends AppCompatActivity {
                 response = callApi();
             } catch (Exception e) {
                 LauncherActivity.this.runOnUiThread(()-> {
-                    Toast.makeText(getApplicationContext(), "No response from the server", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "No response from server 2", Toast.LENGTH_LONG).show();
                 });
 
             }
@@ -110,10 +110,14 @@ public class LauncherActivity extends AppCompatActivity {
                 Gson gc = new Gson();
                 if (response != null) {
                     ResponseModel responseModel = gc.fromJson(response.getBody().toString(), ResponseModel.class);
-                    LinkedTreeMap map = (LinkedTreeMap) responseModel.getData();
-                    String usermobile = Objects.requireNonNull(map.get("usermobile")).toString();
-                    String useremail = Objects.requireNonNull(map.get("useremail")).toString();
                     if (responseModel.getSucceeded()) {
+                        LinkedTreeMap map = (LinkedTreeMap) responseModel.getData();
+                        String usermobile = "";
+                        String useremail = "";
+                        if (map != null) {
+                            usermobile = Objects.requireNonNull(map.get("usermobile")).toString();
+                            useremail = Objects.requireNonNull(map.get("useremail")).toString();
+                        }
                         Intent intent = new Intent(LauncherActivity.this, LoginActivity.class);
                         intent.putExtra("phoneuId", phoneuId);
                         if (!useremail.isEmpty()) {
@@ -131,11 +135,11 @@ public class LauncherActivity extends AppCompatActivity {
                         finish();
                     }
                 } else {
-                    Toast.makeText(LauncherActivity.this, "No response from the server", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LauncherActivity.this, "No response from server 3", Toast.LENGTH_SHORT).show();
                 }
             }catch (Exception e) {
                 LauncherActivity.this.runOnUiThread(()-> {
-                    Toast.makeText(getApplicationContext(), "No response from the server", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "No response from server 4", Toast.LENGTH_LONG).show();
                 });
             }
 

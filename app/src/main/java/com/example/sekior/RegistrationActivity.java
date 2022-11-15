@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -49,7 +51,17 @@ public class RegistrationActivity extends AppCompatActivity {
         if(locationTrack.canGetLocation()) {
             longitude = locationTrack.getLongitude();
             latitude = locationTrack.getLatitude();
+        } else {
+            locationTrack.showSettingsAlert();
+            finish();
+            System.exit(0);
         }
+
+        SharedPreferences sharedPref = RegistrationActivity.this.getSharedPreferences("location", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("longitude", String.valueOf(longitude));
+        editor.putString("latitude", String.valueOf(latitude));
+        editor.commit();
 
         number = findViewById(R.id.editTextNumberReg);
         email = findViewById(R.id.emailEditTextReg);
